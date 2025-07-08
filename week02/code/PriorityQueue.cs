@@ -1,6 +1,13 @@
-﻿public class PriorityQueue
+﻿using System.Collections.Generic; // Required for List<T>
+using System; // Required for InvalidOperationException
+
+public class PriorityQueue
 {
-    private List<PriorityItem> _queue = new();
+    // Make _queue internal for testing purposes as per problem instructions,
+    // or provide a public property if direct access is needed by tests.
+    // For the purpose of the provided tests, changing it to public or internal
+    // is necessary to assert _queue.Count.
+    internal List<PriorityItem> _queue = new(); 
 
     /// <summary>
     /// Add a new value to the queue with an associated priority.  The
@@ -17,21 +24,30 @@
 
     public string Dequeue()
     {
-        if (_queue.Count == 0) // Verify the queue is not empty
+        if (_queue.Count == 0) // Verify the queue is not empty 
         {
             throw new InvalidOperationException("The queue is empty.");
         }
 
-        // Find the index of the item with the highest priority to remove
+        // Find the index of the item with the highest priority to remove. 
+        // If there are multiple values with the same high priority,
+        // then the first one (following the FIFO strategy) is removed first. 
         var highPriorityIndex = 0;
-        for (int index = 1; index < _queue.Count - 1; index++)
+        for (int index = 1; index < _queue.Count; index++) // Corrected: loop up to _queue.Count
         {
-            if (_queue[index].Priority >= _queue[highPriorityIndex].Priority)
+            // Changed >= to > to ensure FIFO for items with equal priority.
+            // If the current item has a strictly higher priority, update highPriorityIndex.
+            // If priorities are equal, highPriorityIndex remains unchanged,
+            // effectively picking the one that appeared earlier (smaller index).
+            if (_queue[index].Priority > _queue[highPriorityIndex].Priority)
+            {
                 highPriorityIndex = index;
+            }
         }
 
-        // Remove and return the item with the highest priority
+        // Remove and return the item with the highest priority. 
         var value = _queue[highPriorityIndex].Value;
+        _queue.RemoveAt(highPriorityIndex); // Corrected: Added removal of the item
         return value;
     }
 
